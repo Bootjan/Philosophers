@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bschaafs <bschaafs@student.42.fr>          +#+  +:+       +#+        */
+/*   By: bootjan <bootjan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 23:47:08 by bschaafs          #+#    #+#             */
-/*   Updated: 2023/11/21 14:25:35 by bschaafs         ###   ########.fr       */
+/*   Updated: 2023/11/22 18:39:44 by bootjan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,35 @@ int	mail = 0;
 
 void	*routine(void *ptr)
 {
-	for (int i = 0; i < 1000000; i++)
+	pthread_mutex_t	*mutex = ptr;
+	for (int i = 0; i < 10000000; i++)
+	{
+		pthread_mutex_lock(mutex);
 		mail++;
-	return (ptr);
+		pthread_mutex_unlock(mutex);
+	}
+	return (NULL);
 }
 
 int	main(void)
 {
-	pthread_t	t1, t2;
+	pthread_t		ths[8];
+	pthread_mutex_t	mutex;
 
-	if (pthread_create(&t1, NULL, &routine, NULL) != 0)
-		return (1);
-	if (pthread_create(&t2, NULL, &routine, NULL) != 0)
-		return (1);
-	if (pthread_join(t1, NULL) != 0)
-		return (1);
-	if (pthread_join(t2, NULL) != 0)
-		return (1);
+	pthread_mutex_init(&mutex, NULL);
+	for (int i = 0; i < 8; i++)
+	{
+		if (pthread_create(&(ths[i]), NULL, &routine, &mutex) != 0)
+			return (1);
+		printf("Started thread %i\n", i);
+	}
+	for (int i = 0; i < 8; i++)
+	{
+		if (pthread_join(ths[i], NULL) != 0)
+			return (1);
+		printf("Ended thread %i\n", i);
+	}
+	pthread_mutex_destroy(&mutex);
 	printf("Mail: %i\n", mail);
 	return (0);
 }

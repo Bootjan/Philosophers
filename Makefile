@@ -1,4 +1,4 @@
-MAIN = main.c
+MAIN = main2.c
 
 SRCS = $(MAIN)
 
@@ -10,7 +10,7 @@ I_DIRS := $(shell find . -type f -name "*.h" -exec dirname {} + | uniq)
 INCLUDE = ${I_DIRS:%=-I%}
 
 CC = cc
-CFLAGS = -Wall -Werror -Wextra -fsanitize=address -g
+CFLAGS = -Wall -Werror -Wextra
 OBJS_DIR = ./objs
 
 RM = rm -f
